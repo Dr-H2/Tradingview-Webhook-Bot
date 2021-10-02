@@ -11,13 +11,17 @@ Email: danwallaceasu@gmail.com
 Created: 08/30/20
 
 <<Last Update: 09/25/20>>
-"""
 
+Forked contributor: Dr. H
+Real Life Trading UK co-Founder
+Website: reallifetrading.co.uk
+Created Oct 2 2021
+"""
+import os
 import ast
 import requests
 import json
 from flask import Flask, request, abort
-from config import *
 
 def placeOrder(data):  
     BASE_URL = "https://paper-api.alpaca.markets"
@@ -51,7 +55,8 @@ def webhookListen():
         return '', 200
     else:
         abort(400)
-
+key = os.environ.get("APCA-KEY")
+secretKey = os.environ.get("APCA-SECRET-KEY")
 if __name__ == '__main__':
     flaskServer.run()
 
