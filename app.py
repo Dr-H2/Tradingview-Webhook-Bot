@@ -25,8 +25,11 @@ import logging
 from flask import Flask, request, abort
 from config import *
 from logging.handlers import RotatingFileHandler
-from binance.client import Client
-from binance.enums import *
+from binance_f import RequestClient
+from binance_f.constant.test import *
+from binance_f.base.printobject import *
+from binance_f.model.constant import *
+from datetime import datetime
 
 def placeOrder_alpaca(data):  
     BASE_URL = "https://paper-api.alpaca.markets"
@@ -36,21 +39,15 @@ def placeOrder_alpaca(data):
     order = requests.post(ORDERS_URL, json=data, headers=HEADERS)
     return json.loads(order.content)
 
-def placeOrder_binance(data,client):
-    
+def placeOrder_binance(data, client):
     if data["side"]=="buy":
-        SIDE=SIDE_BUY
+        SIDE=OrderSide.BUY
     else:
-        SIDE=SIDE_SELL
+        SIDE=OrderSide.SELL
 
-    order = client.create_margin_order(
-            symbol=data["symbol"],
-            side=SIDE,
-            type=ORDER_TYPE_MARKET,
-            timeInForme=TIME_IN_FORCE_GTC,
-            quantity=data["qty"],
-            )
+    client.post_order(symbol=data["symbol"], side=SIDE, ordertype=OrderType.MARKET, quantity=data["qty"])
 
+    
     #IGNORE type and time_in_force for the moment.
 
 def webhookParse(webhook_data):
@@ -66,17 +63,13 @@ def alpaca_parse(data):
     out["time_in_force"] = data["time_in_force"]
     return out
 
-def log_alpaca(data):
-    logger.info(' ---- Tradingview Alert Received')
-    logger.info('Alert:' + str(data))
-    logger.info(' ---- Sending Trade to Alpaca')
+def log_alpaca(data, logger):
+    #logger.info('Alert:' + str(data))
     logger.info('Sending order: Symbol ' + data["symbol"] + ' Quantity: ' + data["qty"] + ' Buy/Sell: ' + data["side"] + ' Type: ' + data["type"] + ' Time in force: ' + data["time_in_force"])
     logger.info(' ---- Order Sent\n')
 
-def log_binance(data):
-    logger.info(' ---- Tradingview Alert Received')
-    logger.info('Alert:' + str(data))
-    logger.info(' ---- Sending Trade to Binance')
+def log_binance(data, logger):
+    #logger.info('Alert:' + str(data))
     logger.info('Sending order: Symbol ' + data["symbol"] + ' Quantity: ' + data["qty"] + ' Buy/Sell: ' + data["side"] + ' Type: ' + data["type"] + ' Time in force: ' + data["time_in_force"])
     logger.info(' ---- Order Sent\n')
 
@@ -95,23 +88,48 @@ def webhookListen():
     if request.method == 'POST':
         data = webhookParse(request.get_data(as_text=True))
         
+        # Order Logging
+        log_path = 'order.log'
+        #os.makedirs(log_path, exist_ok=True)
+        _logger = logging.getLogger("Orders")
+        _logger.setLevel(logging.INFO)
+
+        handler = RotatingFileHandler(log_path, maxBytes=1024*1024*20, backupCount=5)
+        _logger.addHandler(handler)
+
+        # First message from a Flask worker
+        _logger.info("\n============================================")
+        _logger.info(str(datetime.now()) + " Flask Worker initialized")
+
+        # Read token
+        f = open("token", "r")
+        token = f.read().strip("\n\r")
+        f.close()
+
+        
         # Verify token
         try:
             if token != data["token"]:
+                _logger.error("token mismatch")
+                _logger.error("received token is:" + data["token"])
                 abort(400)
-        except:
+        except e:
+            _logger.error(str(e))
             abort(400)
 
         
         
         # Place order
-        if data["broker"].low() == "alpaca":
+        if data["broker"].lower() == "alpaca":
+            _logger.info("Sending Order to Alpaca...")
             order_data = alpaca_parse(data)
-            log_alpaca(data)
+            log_alpaca(data, _logger)
             placeOrder_alpaca(order_data)
         else:
-            log_binance(data)
-            placeOrder_binance(data, client)
+            _logger.info("Sending Order to Binance...")
+            request_client = RequestClient(api_key=binance_key, secret_key=binance_secret, server_url="https://testnet.binance.com")
+            log_binance(data, _logger)
+            placeOrder_binance(data, request_client)
         
         return '', 200
     else:
@@ -122,20 +140,5 @@ def webhookListen():
 #key = os.environ.get("APCA_KEY")
 #secretKey = os.environ.get("APCA_SECRET_KEY")
 if __name__ == '__main__':
-    # Order Logging
-    log_path = 'order.log'
-    #os.makedirs(log_path, exist_ok=True)
-    logger = logging.getLogger("Orders")
-    logger.setLevel(logging.INFO)
-
-    handler = RotatingFileHandler(log_path, maxBytes=1024*1024*20, backupCount=5)
-    logger.addHandler(handler)
-
-    # Read token
-    f = open("token", "r")
-    token = f.read()
-    f.close()
-
-    client = Client(binance_key, binance_secret, testnet=True)
     flaskServer.run()
 
