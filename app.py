@@ -55,8 +55,8 @@ def webhookListen():
         return '', 200
     else:
         abort(400)
-key = os.environ.get("APCA-KEY")
-secretKey = os.environ.get("APCA-SECRET-KEY")
+key = os.environ.get("APCA_KEY")
+secretKey = os.environ.get("APCA_SECRET_KEY")
 if __name__ == '__main__':
     flaskServer.run()
 
