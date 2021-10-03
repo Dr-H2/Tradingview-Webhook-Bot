@@ -26,3 +26,24 @@ Sending Order to Binance...
 Sending order: Symbol BTCUSDT Quantity: 0.403 Buy/Sell: buy Type: market Time in force: gtc
  ---- Order Sent
 
+
+============================================
+2021-10-03 07:03:40.358293 Flask Worker initialized
+Sending Order to Binance...
+Sending order: Symbol BTCUSDT Quantity: 0.403356 Buy/Sell: buy Type: market Time in force: gtc
+ ---- Order Sent
+
+
+============================================
+
+============================================
+2021-10-03 07:10:00.542619 Flask Worker initialized
+2021-10-03 07:10:00.542619 Flask Worker initialized
+Sending Order to Binance...
+Sending Order to Binance...
+Sending order: Symbol BTCUSDT Quantity: 0.404166 Buy/Sell: sell Type: market Time in force: gtc
+Sending order: Symbol BTCUSDT Quantity: 0.404166 Buy/Sell: sell Type: market Time in force: gtc
+ ---- Order Sent
+
+ ---- Order Sent
+
