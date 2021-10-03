@@ -45,7 +45,9 @@ def placeOrder_binance(data, client):
     else:
         SIDE=OrderSide.SELL
 
-    client.post_order(symbol=data["symbol"], side=SIDE, ordertype=OrderType.MARKET, quantity=data["qty"])
+    qty = float(data["qty"])
+
+    client.post_order(symbol=data["symbol"], side=SIDE, ordertype=OrderType.MARKET, quantity="{:.3f}".format(qty))
 
     
     #IGNORE type and time_in_force for the moment.
