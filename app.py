@@ -31,7 +31,7 @@ from binance_f.base.printobject import *
 from binance_f.model.constant import *
 from datetime import datetime
 
-def placeOrder_alpaca(data):  
+def placeOrder_alpaca(data):
     BASE_URL = "https://paper-api.alpaca.markets"
     ACCOUNT_URL = "{}/v2/account".format(BASE_URL)
     ORDERS_URL = "{}/v2/orders".format(BASE_URL)
@@ -48,9 +48,25 @@ def placeOrder_binance(data, client):
     qty = float(data["qty"])
 
     client.post_order(symbol=data["symbol"], side=SIDE, ordertype=OrderType.MARKET, quantity="{:.3f}".format(qty))
-
-    
     #IGNORE type and time_in_force for the moment.
+
+def flatten_alpaca(symbol, client):
+    pass
+
+def flatten_binance(symbol, client):
+    pos = request_client.get_position_v2()
+
+    # Find the symbol and flatten
+    for obj in pos:
+        if obj.symbol == symbol:
+            if obj.positionAmt > 0:
+                SIDE = OrderSide.SELL
+            elif obj.positionAmt < 0:
+                SIDE = OrderSide.BUY
+            if obj.positionAmt != 0.0:
+                client.post_order(symbol=symbol, side=SIDE, ordertype=OrderType.MARKET, quantity=abs(obj.positionAmt))
+            break
+
 
 def webhookParse(webhook_data):
     data = ast.literal_eval(webhook_data)
@@ -89,7 +105,7 @@ def root():
 def webhookListen():
     if request.method == 'POST':
         data = webhookParse(request.get_data(as_text=True))
-        
+
         # Order Logging
         log_path = 'order.log'
         #os.makedirs(log_path, exist_ok=True)
@@ -108,7 +124,7 @@ def webhookListen():
         token = f.read().strip("\n\r")
         f.close()
 
-        
+
         # Verify token
         try:
             if token != data["token"]:
@@ -119,20 +135,28 @@ def webhookListen():
             _logger.error(str(e))
             abort(400)
 
-        
-        
+
+
         # Place order
         if data["broker"].lower() == "alpaca":
             _logger.info("Sending Order to Alpaca...")
             order_data = alpaca_parse(data)
             log_alpaca(data, _logger)
+            # Flatten the positions on the given ticker
+            if data["flatten_before_trigger"] == "true":
+                flatten_alpaca(data["symbol"], request_client)
+            # Place the order
             placeOrder_alpaca(order_data)
         else:
             _logger.info("Sending Order to Binance...")
             request_client = RequestClient(api_key=binance_key, secret_key=binance_secret, server_url="https://testnet.binance.com")
             log_binance(data, _logger)
+            # Flatten the positions on the given ticker
+            if data["flatten_before_trigger"] == "true":
+                flatten_binance(data["symbol"], request_client)
+            # Place the order
             placeOrder_binance(data, request_client)
-        
+
         return '', 200
     else:
         abort(400)
@@ -143,4 +167,3 @@ def webhookListen():
 #secretKey = os.environ.get("APCA_SECRET_KEY")
 if __name__ == '__main__':
     flaskServer.run()
-
