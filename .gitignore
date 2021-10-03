@@ -11,4 +11,4 @@ venv.bak/
 
 config.py
 token
-.log
+*.log
