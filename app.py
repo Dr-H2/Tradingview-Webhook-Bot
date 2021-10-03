@@ -54,7 +54,7 @@ def flatten_alpaca(symbol, client):
     pass
 
 def flatten_binance(symbol, client):
-    pos = request_client.get_position_v2()
+    pos = client.get_position_v2()
 
     # Find the symbol and flatten
     for obj in pos:
@@ -143,7 +143,7 @@ def webhookListen():
             order_data = alpaca_parse(data)
             log_alpaca(data, _logger)
             # Flatten the positions on the given ticker
-            if data["flatten_before_trigger"] == "true":
+            if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
                 flatten_alpaca(data["symbol"], request_client)
             # Place the order
             placeOrder_alpaca(order_data)
@@ -152,7 +152,7 @@ def webhookListen():
             request_client = RequestClient(api_key=binance_key, secret_key=binance_secret, server_url="https://testnet.binance.com")
             log_binance(data, _logger)
             # Flatten the positions on the given ticker
-            if data["flatten_before_trigger"] == "true":
+            if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
                 flatten_binance(data["symbol"], request_client)
             # Place the order
             placeOrder_binance(data, request_client)
