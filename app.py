@@ -95,7 +95,7 @@ def webhookListen():
             apca.log(data, _logger)
             # Flatten the positions on the given ticker
             if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
-                apca.flatten(data["symbol"])
+                res=apca.flatten(data["symbol"])
             # Place the order
             apca.placeOrder(order_data)
         elif data["broker"].lower() == "binance":
