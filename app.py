@@ -90,7 +90,7 @@ def webhookListen():
 
         # Place order
         if data["broker"].lower() == "alpaca":
-            apca = AlpacaHandler(key, secretKey)
+            apca = AlpacaHandler(key, secretKey, paper=True)
             order_data = apca.order_parse(data)
             apca.log(data, _logger)
             # Flatten the positions on the given ticker

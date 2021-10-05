@@ -9,7 +9,7 @@ class BinanceHandler():
         self._key = key
         self._secret = secret
         if testnet:
-            self._client = RequestClient(api_key=key, secret_key=secret, url="https://testnet.binance.com")
+            self._client = RequestClient(api_key=key, secret_key=secret) #Strange that it defaults to testnet... But what is the real url for testnet?
         else:
             self._client = RequestClient(api_key=key, secret_key=secret, url="https://fapi.binance.com")
 
@@ -22,7 +22,7 @@ class BinanceHandler():
         qty = float(data["qty"])
 
         self._client.post_order(symbol=data["symbol"], side=SIDE, ordertype=OrderType.MARKET, quantity="{:.3f}".format(qty))
-        #IGNORE type and time_in_force for the moment.
+        #IGNORE type and time_in_force for the moment. Will develop in the future.
 
     def flatten(self, symbol):
         pos = self._client.get_position_v2()
