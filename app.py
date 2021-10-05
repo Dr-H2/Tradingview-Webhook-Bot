@@ -19,78 +19,29 @@ Created Oct 2 2021
 """
 import os
 import ast
-import requests
 import json
 import logging
+import requests
 from flask import Flask, request, abort
 from config import *
 from logging.handlers import RotatingFileHandler
+'''
 from binance_f import RequestClient
 from binance_f.constant.test import *
 from binance_f.base.printobject import *
 from binance_f.model.constant import *
+'''
 from datetime import datetime
 
-def placeOrder_alpaca(data):
-    BASE_URL = "https://paper-api.alpaca.markets"
-    ACCOUNT_URL = "{}/v2/account".format(BASE_URL)
-    ORDERS_URL = "{}/v2/orders".format(BASE_URL)
-    HEADERS = {'APCA-API-KEY-ID': key, 'APCA-API-SECRET-KEY': secretKey}
-    order = requests.post(ORDERS_URL, json=data, headers=HEADERS)
-    return json.loads(order.content)
+from log_handler.log_handler import *
+from broker_handler.alpaca_handler import *
+from broker_handler.binance_handler import *
 
-def placeOrder_binance(data, client):
-    if data["side"]=="buy":
-        SIDE=OrderSide.BUY
-    else:
-        SIDE=OrderSide.SELL
-
-    qty = float(data["qty"])
-
-    client.post_order(symbol=data["symbol"], side=SIDE, ordertype=OrderType.MARKET, quantity="{:.3f}".format(qty))
-    #IGNORE type and time_in_force for the moment.
-
-def flatten_alpaca(symbol, client):
-    pass
-
-def flatten_binance(symbol, client):
-    pos = client.get_position_v2()
-
-    # Find the symbol and flatten
-    for obj in pos:
-        if obj.symbol == symbol:
-            if obj.positionAmt > 0:
-                SIDE = OrderSide.SELL
-            elif obj.positionAmt < 0:
-                SIDE = OrderSide.BUY
-            if obj.positionAmt != 0.0:
-                client.post_order(symbol=symbol, side=SIDE, ordertype=OrderType.MARKET, quantity=abs(obj.positionAmt))
-            break
 
 
 def webhookParse(webhook_data):
     data = ast.literal_eval(webhook_data)
     return data
-
-def alpaca_parse(data):
-    out = dict()
-    out["symbol"] = data["symbol"]
-    out["qty"] = data["qty"]
-    out["side"] = data["side"]
-    out["type"] = data["type"]
-    out["time_in_force"] = data["time_in_force"]
-    return out
-
-def log_alpaca(data, logger):
-    #logger.info('Alert:' + str(data))
-    logger.info('Sending order: Symbol ' + data["symbol"] + ' Quantity: ' + data["qty"] + ' Buy/Sell: ' + data["side"] + ' Type: ' + data["type"] + ' Time in force: ' + data["time_in_force"])
-    logger.info(' ---- Order Sent\n')
-
-def log_binance(data, logger):
-    #logger.info('Alert:' + str(data))
-    logger.info('Sending order: Symbol ' + data["symbol"] + ' Quantity: ' + data["qty"] + ' Buy/Sell: ' + data["side"] + ' Type: ' + data["type"] + ' Time in force: ' + data["time_in_force"])
-    logger.info(' ---- Order Sent\n')
-
 
 
 
@@ -139,23 +90,22 @@ def webhookListen():
 
         # Place order
         if data["broker"].lower() == "alpaca":
-            _logger.info("Sending Order to Alpaca...")
-            order_data = alpaca_parse(data)
-            log_alpaca(data, _logger)
+            apca = AlpacaHandler(key, secretKey)
+            order_data = apca.order_parse(data)
+            apca.log(data, _logger)
             # Flatten the positions on the given ticker
             if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
-                flatten_alpaca(data["symbol"], request_client)
+                apca.flatten(data["symbol"])
             # Place the order
-            placeOrder_alpaca(order_data)
-        else:
-            _logger.info("Sending Order to Binance...")
-            request_client = RequestClient(api_key=binance_key, secret_key=binance_secret, server_url="https://testnet.binance.com")
-            log_binance(data, _logger)
+            apca.placeOrder(order_data)
+        elif data["broker"].lower() == "binance":
+            binance = BinanceHandler(binance_key, binance_secret, testnet=True)
+            binance.log(data, _logger)
             # Flatten the positions on the given ticker
             if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
-                flatten_binance(data["symbol"], request_client)
+                binance.flatten(data["symbol"])
             # Place the order
-            placeOrder_binance(data, request_client)
+            binance.placeOrder(data)
 
         return '', 200
     else:
