@@ -41,4 +41,3 @@ class BinanceHandler():
     def log(self, data, logger):
         #logger.info('Alert:' + str(data))
         logger.info('Sending order: Symbol ' + data["symbol"] + ' Quantity: ' + data["qty"] + ' Buy/Sell: ' + data["side"] + ' Type: ' + data["type"] + ' Time in force: ' + data["time_in_force"])
-        logger.info(' ---- Order Sent\n')
