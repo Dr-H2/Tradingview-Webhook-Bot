@@ -1,6 +1,10 @@
 import requests
 import json
 
+APCA_SUCCESS = 0
+APCA_OTHER_ERROR = 1
+APCA_ORDER_PENDING = 2
+
 class AlpacaHandler():
     def __init__(self, key, secret, paper=False):
         self._key = key
@@ -22,6 +26,7 @@ class AlpacaHandler():
 
     def flatten(self, symbol):
         POSITIONS_URL = "{}/v2/positions".format(self._BASE_URL)
+
         order = requests.delete(POSITIONS_URL+"/"+symbol, headers=self._HEADERS)
         return json.loads(order.content)
 
@@ -34,6 +39,13 @@ class AlpacaHandler():
         out["type"] = data["type"]
         out["time_in_force"] = data["time_in_force"]
         return out
+
+    def error_process(self, res):
+        if "status" in res and res["status"] == "accepted":
+            return APCA_SUCCESS
+        if ("existing_qty" in res and res["existing_qty"] != 0) and ("message" in res and res["message"][:16]=="insufficient qty"):
+            return APCA_ORDER_PENDING
+        return APCA_OTHER_ERROR
 
     def log(self, data, logger):
         #logger.info('Alert:' + str(data))

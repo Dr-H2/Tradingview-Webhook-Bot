@@ -20,6 +20,7 @@ Created Oct 2 2021
 import os
 import ast
 import json
+import time
 import logging
 import requests
 from flask import Flask, request, abort
@@ -101,6 +102,14 @@ def webhookListen():
             # Place the order
             res=apca.placeOrder(order_data)
             _logger.info(res)
+            # There is a pending order blocking the execution: Give it 2 more tries, each waiting for 0.3 sec
+            if apca.error_process(res) == APCA_ORDER_PENDING:
+                for _ in range(2):
+                    time.sleep(0.3)
+                    res=apca.placeOrder(order_data)
+                    if apca.error_process(res) == APCA_SUCCESS:
+                        break
+
             _logger.info(' ---- Order Sent\n')
         elif data["broker"].lower() == "binance":
             binance = BinanceHandler(binance_key, binance_secret, testnet=True)
