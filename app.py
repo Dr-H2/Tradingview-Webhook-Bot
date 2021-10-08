@@ -97,8 +97,10 @@ def webhookListen():
             if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
                 res=apca.flatten(data["symbol"])
                 _logger.info(res)
+                _logger.info("----")
             # Place the order
-            apca.placeOrder(order_data)
+            res=apca.placeOrder(order_data)
+            _logger.info(res)
             _logger.info(' ---- Order Sent\n')
         elif data["broker"].lower() == "binance":
             binance = BinanceHandler(binance_key, binance_secret, testnet=True)
@@ -107,8 +109,10 @@ def webhookListen():
             if "flatten_before_trigger" in data and data["flatten_before_trigger"] == "true":
                 res=binance.flatten(data["symbol"])
                 _logger.info(res)
+                _logger.info("----")
             # Place the order
-            binance.placeOrder(data)
+            res=binance.placeOrder(data)
+            _logger.info(res)
             _logger.info(' ---- Order Sent\n')
 
 
