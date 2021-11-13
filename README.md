@@ -1,9 +1,9 @@
 # Tradingview-Alpaca-Binance connection server
 
-Hello algo traders! This is the code for a simple server that takes Tradingview Webhooks and send orders to either Alpaca or Binance for automation! If you are familiar with setting up Flask and cloud servers like AWS, you know what to do next. This is a direct fork and simple enhancement of the original repo in
+Hello algo traders! This is the code for a simple server that takes Tradingview Webhooks and send orders to either Alpaca or Binance for automation! If you are familiar with setting up Flask and cloud servers like AWS, you know what to do next. This came from a fork but I made a bit of enhancement (especially by adding Binance connection option). The original repo:
 https://github.com/wallacewd/Alpaca-TradingView-Trading-Bot-for-AWS. 
 
-The code is quick-and-dirty and does not handle error/debug very well. It is currently for our private purpose, but if the demand rises, we could modify it into a more mature version.
+The code might be a little bit quick-and-dirty. If there is any problem, I apologize. It is currently used for a private purpose, but if the demand rises, I could modify it into a more mature version.
 
 Notes: 
 1. Need to install binance-futures library (pip install binance-futures)
@@ -11,7 +11,7 @@ Notes:
 3. Need to have a config.py. (echo key="....(YOUR APCA KEY)..."\; secret_key="...(YOUR APCA SECRET)..."\; binance_key="...(YOUR BINANCE KEY)..."\; binance_secret="...(YOUR BINANCE SECRET)..." > config.py)
 
 
-But if you need hand-in-hand help to set things up, please feel free to set up a session with Dr. H or Doc Martin from https://www.reallifetrading.co.uk/team
+If you need hand-in-hand help to set things up, please feel free to reach out to Dr. H or Doc Martin from https://www.reallifetrading.co.uk/team
 
 # Real Life Trading UK
 
