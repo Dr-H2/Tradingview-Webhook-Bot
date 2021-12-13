@@ -1,6 +1,6 @@
 # Tradingview-Alpaca-Binance connection server
 
-Hello algo traders! This is the code for a simple server that takes Tradingview Webhooks and send orders to either Alpaca or Binance for automation. If you are familiar with setting up Flask and cloud servers like AWS, you know what to do next. This came from a fork but I made a bit of enhancement (especially by adding Binance connection option). The original repo:
+Hello algo traders! This is the code for a simple server that takes Tradingview Webhooks and send orders to either Alpaca or Binance for automation. If you are familiar with setting up Flask and cloud servers like AWS, you know what to do next. This came from a fork but I made quite a bit of enhancements (especially by adding Binance connection option). The original repo:
 https://github.com/wallacewd/Alpaca-TradingView-Trading-Bot-for-AWS. 
 
 
