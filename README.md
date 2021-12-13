@@ -38,6 +38,7 @@ Notes:
 1. Please use the token you generated from the script "generate_token.sh". It is saved as a plain text file "token" in the same folder (TODO: hash it).
 2. It operates via pine script (strategy script instead of study) on Tradingview.
 3. {{ticker}}, {{strategy.order.contracts}}, {{strategy.order.action}} are reserved for variables defined in the Tradingview strategy script. No need to change them unless you have special needs.
+4. The Tradingview script does not have special requirements other than it is capable of sending out alerts. For the alert setup, please refer to the following example.
 
 An example of the Tradingview Alert setup:
 
