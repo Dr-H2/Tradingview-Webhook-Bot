@@ -8,7 +8,8 @@ Usage:
 1. Need to install binance-futures library (pip install binance-futures)
 2. Need to generate token before deploying (chmod +x generate_token.sh; ./generate_token.sh)
 3. Need to have a config.py. (echo key="....(YOUR APCA KEY)..."\; secret_key="...(YOUR APCA SECRET)..."\; binance_key="...(YOUR BINANCE KEY)..."\; binance_secret="...(YOUR BINANCE SECRET)..." > config.py)
-4. Once the server is set up, it reacts to Webhooks (HTTP POST request in JSON format) that are sent to it. The workflow is the following:
+4. Deploy it as a Flask app. The setup varies, depending on the hosting server you choose (Heroku, GCP, AWS, private server, etc.). There are too many possibilities and variations and I cannot elaborate here.
+5. Once the server is set up, it reacts to Webhooks (HTTP POST request in JSON format) that are sent to it. The workflow is the following:
 
 ```
   -------------------     Webhook     ----------      the JSON "broker" key = "alpaca"      ----------
