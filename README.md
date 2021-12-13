@@ -42,5 +42,5 @@ Notes:
 
 An example of the Tradingview Alert setup:
 
-![alt text](https://cdn.discordapp.com/attachments/830931439612723221/919912651121905734/Screenshot_from_2021-12-13_06-11-59.png)
+![alt text](https://cdn.discordapp.com/attachments/830931439612723221/919914448670560326/Screenshot_from_2021-12-13_06-11-59.png)
 
