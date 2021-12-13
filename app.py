@@ -1,22 +1,3 @@
-"""
-East Village Trading Robot
-Requirements: Tradingview - Alpaca - Ngrok - AWS (amazon web server)
-Enter your alpaca api key and secret key in config.py
-Visit the wiki on the github page for detailed installation steps
-
-Author: Dan Wallace
-Contributors: William Bracken, Brent Richmond
-Website: www.brick.technology
-Email: danwallaceasu@gmail.com
-Created: 08/30/20
-
-<<Last Update: 09/25/20>>
-
-Forked contributor: Dr. H
-Real Life Trading UK co-Founder
-Website: reallifetrading.co.uk
-Created Oct 2 2021
-"""
 import os
 import ast
 import json
