@@ -5,7 +5,41 @@ https://github.com/wallacewd/Alpaca-TradingView-Trading-Bot-for-AWS.
 
 The code might be a little bit quick-and-dirty. If there is any problem, I apologize. It is currently used for a private purpose, but if the demand rises, I could modify it into a more mature version.
 
-Notes: 
+Usage: 
 1. Need to install binance-futures library (pip install binance-futures)
 2. Need to generate token before deploying (chmod +x generate_token.sh; ./generate_token.sh)
 3. Need to have a config.py. (echo key="....(YOUR APCA KEY)..."\; secret_key="...(YOUR APCA SECRET)..."\; binance_key="...(YOUR BINANCE KEY)..."\; binance_secret="...(YOUR BINANCE SECRET)..." > config.py)
+4. Once the server is set up, it reacts to Webhooks (HTTP POST request in JSON format) that are sent to it. The workflow is the following:
+
+```
+  -------------------     Webhook     ----------      the JSON "broker" key = "alpaca"      ----------
+  Tradingview Alert |     ======>     | Server |      ================================>     | Alpaca |
+  -------------------                 ----------                                            ----------
+                                                      the JSON "broker" key = "binance"     -----------
+                                                      ================================>     | Binance |
+                                                                                            -----------
+```
+  
+  
+# Sample alert message from Tradingview:
+```
+{ 
+"token": "*************",
+"broker": "binance",
+"flatten_before_trigger": "true",
+"symbol": "{{ticker}}", 
+"qty": "{{strategy.order.contracts}}", 
+"side": "{{strategy.order.action}}", 
+"type": "market",
+"time_in_force": "gtc" 
+}
+```
+Notes:
+1. Please use the token you generated from the script "generate_token.sh". It is saved as a plain text file "token" in the same folder (TODO: hash it).
+2. It operates via pine script (strategy script instead of study) on Tradingview.
+3. {{ticker}}, {{strategy.order.contracts}}, {{strategy.order.action}} are reserved for variables defined in the Tradingview strategy script. No need to change them unless you have special needs.
+
+An example of the Tradingview Alert setup:
+
+![alt text](https://cdn.discordapp.com/attachments/830931439612723221/919912651121905734/Screenshot_from_2021-12-13_06-11-59.png)
+
