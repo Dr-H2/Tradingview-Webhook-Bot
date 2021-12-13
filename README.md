@@ -3,7 +3,6 @@
 Hello algo traders! This is the code for a simple server that takes Tradingview Webhooks and send orders to either Alpaca or Binance for automation. If you are familiar with setting up Flask and cloud servers like AWS, you know what to do next. This came from a fork but I made a bit of enhancement (especially by adding Binance connection option). The original repo:
 https://github.com/wallacewd/Alpaca-TradingView-Trading-Bot-for-AWS. 
 
-The code might be a little bit quick-and-dirty. If there is any problem, I apologize. It is currently used for a private purpose, but if the demand rises, I could modify it into a more mature version.
 
 Usage: 
 1. Need to install binance-futures library (pip install binance-futures)
